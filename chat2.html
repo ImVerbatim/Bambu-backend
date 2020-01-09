@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+<title>Chat Example</title>
+<script type="text/javascript">
+window.addEventListener("load", function(event) {myFunction()});
+
+function myFunction() {
+    var conn;
+    var msg = document.getElementById("msg");
+    var log = document.getElementById("log");
+
+    document.getElementById("send").addEventListener("click",function () {
+        if (!conn) {
+            return false;
+        }
+        if (!msg.value) {
+            return false;
+        }
+        if (msg.value != '') {
+                conn.send(
+                    JSON.stringify({
+                        email: "urmom@email.com",
+                        picture: "balls",
+                        username: "imverbatim",
+                        message: msg.value // Strip out html
+                    }
+                ));
+                this.newMsg = ''; // Reset newMsg
+           }
+           return false;
+    });
+
+    if (window["WebSocket"]) {
+        console.log("ws://" + document.location.host + "/chat2/ws");
+        conn = new WebSocket("ws://" + document.location.host + "/chat2/ws");
+        conn.addEventListener('message', function(event) {
+            var msg = JSON.parse(event.data);
+            console.log("message: " + msg);
+            var item = document.createElement("h6");
+            var container = document.getElementById("chat-container");
+            item.innerText = msg.message;
+            container.appendChild(item);
+        });
+        conn.addEventListener('close', function(event) {
+            var item = document.createElement("div");
+            item.innerHTML = "<b>Connection closed.</b>";
+        });
+    } else {
+        var item = document.createElement("div");
+        item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
+    }
+}
+</script>
+<style type="text/css">
+html {
+    overflow: hidden;
+}
+
+body {
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: gray;
+}
+
+#log {
+    background: white;
+    margin: 0;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    position: absolute;
+    top: 0.5em;
+    left: 0.5em;
+    right: 0.5em;
+    bottom: 3em;
+    overflow: auto;
+}
+
+</style>
+</head>
+<body>
+<button id="send">Click me</button>
+<input style="background-color: yellow;" type="text" id="msg" size="64"/>
+<h1>chat2</h1>
+<div id="chat-container">
+    <h6>balls</h6>
+</div>
+</body>
+</html>
